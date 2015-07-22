@@ -1,23 +1,37 @@
 var path = require('path');
+var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 var httpHelpers = require('./http-helpers');
 // require more modules/folders here!
 
 var actions = {
   'GET': function(req, res) {
-    httpHelpers.serveAssets(res, './public/index.html', function(error, content) {
-      if(error) {
-        res.writeHead(500);
-        res.end();
-      } else {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(content);
-      }
-    });
+    if(req.url === '/') {
+      httpHelpers.serveAssets(res, './public/index.html', function(error, content) {
+        if(error) {
+          res.writeHead(500);
+          res.end();
+        } else {
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.end(content);
+        }
+      });
+    } else {
+      var filePath = archive.paths.archivedSites + req.url;
+      fs.readFile(filePath, function(error, content) {
+        if(error) {
+          res.writeHead(404);
+          res.end('404: File not found.');
+        } else {
+          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.end(content);
+        }
+      });
+    }
   },
 
   'POST': function(req, res) {
-    console.log('post');
+    httpHelpers.archive
     res.writeHead(201);
     res.end();
   },
