@@ -71,18 +71,15 @@ var actions = {
             res.writeHead(500);
             res.end('Internal Server Error');
           } else {
-            res.writeHead(302);
             httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
               if(error) {
                 res.writeHead(500);
                 res.end();
               } else {
-                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.writeHead(302, {'Content-Type': 'text/html'});
                 res.end(content);
               }
-            });
-            res.writeHead(302);
-            res.end();    
+            });    
           }
         });
       }
