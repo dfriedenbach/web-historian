@@ -30,9 +30,11 @@ exports.readListOfUrls = function(callback){
   fs.readFile(exports.paths.list, 'utf8',function(error, content) {
     if(!error) {
       urlList = content.split('\n');
+      urlList.pop();
       if (callback) {
         callback(urlList);
       }
+      console.log("Read url list: " + urlList);
     }
   });
 };
@@ -59,20 +61,21 @@ exports.addUrlToList = function(url, callback){
 
 exports.isUrlArchived = function(url, callback){
   var found = false;
-  fs.open(exports.paths.archivedSites + '/' + url, 'r', function(error) {
+  fs.open(exports.paths.archivedSites + '/' + url, 'r', function(error, fd) {
     if(!error) {
       found = true;
+      console.log('File ' + exports.paths.archivedSites + '/' + url + ' found.');
+      fs.close(fd, function(error){
+        if(error) {
+          console.log('Error closing file.')
+        }
+      });
+    }
+    if(callback) {
+      callback(found);
     }
   });
 
-  if(found) {
-    fs.close(exports.paths.archivedSites + '/' + url, function(){
-
-    });
-  }
-  if(callback) {
-    callback(found);
-  }
   return found;
 };
 
@@ -81,6 +84,7 @@ exports.downloadUrls = function(inputList){
   if(inputList) {
     urls = inputList;
   }
+  console.log('Attempting to download these URLs: ' + urls);
   for (var i = 0; i < urls.length; i++) {
     http.get(urls[i], exports.paths.archivedSites + '/' + urls[i], function(error, res) {
       if (error) {
@@ -92,4 +96,3 @@ exports.downloadUrls = function(inputList){
 };
 
 exports.readListOfUrls();
-urlList.pop();

@@ -37,30 +37,34 @@ var actions = {
       tempData += data;
     });
     req.on('end', function() {
-      var filePath = archive.paths.archivedSites + req.url;
       var post = qs.parse(tempData);
+      var filePath = archive.paths.archivedSites + '/' + post.url;
       if (archive.isUrlInList(post.url)) {
-        if(archive.isUrlArchived(post.url)) {
-          fs.readFile(filePath, function(error, content) {
-            if(error) {
-              res.writeHead(500);
-              res.end('500: Failed to load file.');
-            } else {
-              res.writeHead(200, {'Content-Type': 'text/html'});
-              res.end(content);
-            }
-          });
-        } else {
-          httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
-            if(error) {
-              res.writeHead(500);
-              res.end();
-            } else {
-              res.writeHead(200, {'Content-Type': 'text/html'});
-              res.end(content);
-            }
-          });
-        }
+        archive.isUrlArchived(post.url, function(found){
+          if (found) {
+            console.log('Attempting to open: "' + filePath + '"');
+            fs.readFile(filePath, function(error, content) {
+              if(error) {
+                console.log(error);
+                res.writeHead(500);
+                res.end('500: Failed to load file.');
+              } else {
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(content);
+              }
+            });
+          } else {
+            httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
+              if(error) {
+                res.writeHead(500);
+                res.end();
+              } else {
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(content);
+              }
+            });
+          }
+        });
       } else {
         // Write to file
         fs.appendFile(archive.paths.list, post.url + '\n', function(error) {
