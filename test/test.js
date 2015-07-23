@@ -57,7 +57,7 @@ describe("server", function() {
 
         request
           .post("/")
-          .send({ url: url })
+          .send('url='+url)
           .expect(302, function (err) {
             if (!err) {
               var fileContents = fs.readFileSync(archive.paths.list, 'utf8');

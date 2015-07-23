@@ -37,13 +37,16 @@ exports.readListOfUrls = function(callback){
 };
 
 exports.isUrlInList = function(url){
-  exports.readListOfUrls();
-  for(var i = 0; i < urlList.length; i++) {
-    if(urlList[i] === url) {
-      return true;
+  var found = false
+  exports.readListOfUrls(function() {
+    for(var i = 0; i < urlList.length; i++) {
+      console.log('Checking: "' + url + '" vs. "' + urlList[i] + '"');
+      if(urlList[i] === url) {
+        found = true;
+      }
     }
-  }
-  return false;
+  });
+  return found;
 };
 
 exports.addUrlToList = function(){

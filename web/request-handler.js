@@ -8,12 +8,12 @@ var qs = require('querystring');
 var actions = {
   'GET': function(req, res) {
     if(req.url === '/') {
-      httpHelpers.serveAssets(res, './public/index.html', function(error, content) {
+      httpHelpers.serveAssets(res, archive.paths.siteAssets + '/index.html', function(error, content) {
         if(error) {
           res.writeHead(500);
           res.end();
         } else {
-          res.writeHead(200, {'Content-Type': 'text/html'});
+          res.writeHead(200, headers);
           res.end(content);
         }
       });
@@ -51,7 +51,7 @@ var actions = {
             }
           });
         } else {
-          httpHelpers.serveAssets(res, './public/loading.html', function(error, content) {
+          httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
             if(error) {
               res.writeHead(500);
               res.end();
@@ -63,11 +63,24 @@ var actions = {
         }
       } else {
         // Write to file
+        console.log(tempData);
+        console.log(post.url);
+        console.log('writing to file' + post.url);
         fs.appendFile(archive.paths.list, post.url + '\n', function(error) {
           if(error) {
             res.writeHead(500);
             res.end('Internal Server Error');
           } else {
+            res.writeHead(302);
+            httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
+              if(error) {
+                res.writeHead(500);
+                res.end();
+              } else {
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(content);
+              }
+            });
             res.writeHead(302);
             res.end();    
           }
@@ -90,4 +103,12 @@ exports.handleRequest = function (req, res) {
     res.end('Method not allowed');
   }
 
+};
+
+var headers = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10, // Seconds.
+  "content-type": "text/html"
 };
