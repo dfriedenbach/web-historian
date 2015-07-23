@@ -17,6 +17,4 @@ exports.serveAssets = function(res, asset, callback) {
   fs.readFile(asset, callback);
 };
 
-
-
 // As you progress, keep thinking about what helper functions you can put here!
