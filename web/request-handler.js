@@ -68,6 +68,7 @@ var actions = {
             res.writeHead(500);
             res.end('Internal Server Error');
           } else {
+            archive.addUrlToList(post.url);
             httpHelpers.serveAssets(res, archive.paths.siteAssets + '/loading.html', function(error, content) {
               if(error) {
                 res.writeHead(500);
