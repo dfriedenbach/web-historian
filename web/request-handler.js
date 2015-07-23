@@ -63,9 +63,6 @@ var actions = {
         }
       } else {
         // Write to file
-        console.log(tempData);
-        console.log(post.url);
-        console.log('writing to file' + post.url);
         fs.appendFile(archive.paths.list, post.url + '\n', function(error) {
           if(error) {
             res.writeHead(500);
@@ -87,7 +84,8 @@ var actions = {
   },
 
   'OPTIONS': function(req, res) {
-
+    res.writeHead(200, headers);
+    res.end();
   }
 };
 

@@ -36,23 +36,28 @@ exports.readListOfUrls = function(callback){
   });
 };
 
-exports.isUrlInList = function(url){
-  var found = false
-  exports.readListOfUrls(function() {
-    for(var i = 0; i < urlList.length; i++) {
-      console.log('Checking: "' + url + '" vs. "' + urlList[i] + '"');
-      if(urlList[i] === url) {
-        found = true;
-      }
+exports.isUrlInList = function(url, callback){
+  var found = false;
+  for(var i = 0; i < urlList.length; i++) {
+    console.log('Checking: "' + url + '" vs. "' + urlList[i] + '"');
+    if(urlList[i] === url) {
+      found = true;
     }
-  });
+  }
+  if(callback) {
+    callback(found);
+  }
   return found;
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(url, callback){
+  urlList.push(url);
+  if(callback) {
+    callback();
+  }
 };
 
-exports.isUrlArchived = function(url){
+exports.isUrlArchived = function(url, callback){
   var found = false;
   fs.open(exports.paths.archivedSites + '/' + url, 'r', function(error) {
     if(!error) {
@@ -65,8 +70,13 @@ exports.isUrlArchived = function(url){
 
     });
   }
+  if(callback) {
+    callback(found);
+  }
   return found;
 };
 
 exports.downloadUrls = function(){
 };
+
+exports.readListOfUrls();
